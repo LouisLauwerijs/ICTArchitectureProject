@@ -1,23 +1,31 @@
-Klant wil:
-Je klant wil een applicatie voor restaurants om bestellingen en leveringen te beheren, inclusief integratie met externe bezorgdiensten. Vergelijkbare voorbeelden zijn Uber Eats en Deliveroo.
+# Vereisten voor de restaurant- en bezorgapplicatie
 
-1) Interoperability
-    De klant wil "integratie met extrene bezorgdiensten" dus dit is zeker een must. Elke dienst heeft zijn eigen API en het systeem moet nieuwe diensten kunnen toevoegen en verwerken.
+De klant wil een applicatie voor restaurants om bestellingen en leveringen te beheren, inclusief integratie met externe bezorgdiensten. Vergelijkbare voorbeelden zijn Uber Eats en Deliveroo.
 
-2) Elasticiteit
-    Afhankelijk het uur zullen er meer of minder requests zijn. Dit mag de kwaliteit van de ervaring niet omlaag halen.
+## 1. Interoperability
 
-3) Recoverability
-    Als het systeem uitvalt tijdens een bestelling moet het terug kunnen verder werken zonder data te verliezen. Anders zouden klanten die al betaald hebben hun bestellingen niet kunnen krijgen.
+De klant wil integratie met externe bezorgdiensten, dus dit is een essentiële vereiste. Elke bezorgdienst heeft zijn eigen API en het systeem moet eenvoudig nieuwe diensten kunnen toevoegen en verwerken.
 
-4) Accuracy
-    Een bestelling die betaald is moet altijd correct zijn en effectief aankomen. Als een bestelling niet aankomt is dat niet acceptabel en een groot probleem voor de klant en de firma.
+## 2. Elasticiteit
 
-5) Security
-    Wanneer een klant zijn of haar bankgegevens ingeeft om een bestelling te voltooien en te betalen mag er geen mogelijkheid zijn dat die gegevens vrijkomen. Over het algemeen moeten de gegevens van de klant privé gehouden worden tenzij anders vermeld.
+Afhankelijk van het tijdstip van de dag zullen er meer of minder requests zijn. Dit mag de kwaliteit van de gebruikerservaring niet negatief beïnvloeden.
 
-6) Availability
-    Als een klant op de piek van de dag besteld moet de ervaring van het gebruik van de applicatie even goed zijn als wanneer er nauwelijks requests binnen komen.
+## 3. Recoverability
 
-7) Fault tolerance
-    Wanneer er iets fout gaat moet het systeem blijven werken en dus overschakelen naar een andere optie. Als bijvoorbeeld Uber Eats niet beschikbaar is moet het systeem automatisch een andere bezorgdiesnt gebruiken
+Als het systeem uitvalt tijdens een bestelling, moet het correct kunnen herstellen zonder data te verliezen. Klanten die al betaald hebben, moeten hun bestelling nog steeds correct kunnen ontvangen.
+
+## 4. Accuracy
+
+Een bestelling die betaald is, moet altijd correct verwerkt en geleverd worden. Een bestelling die niet aankomt is onacceptabel en vormt een groot probleem voor zowel de klant als het bedrijf.
+
+## 5. Security
+
+Wanneer een klant bankgegevens invoert om een bestelling te betalen, mogen deze gegevens nooit uitlekken. In het algemeen moeten alle klantgegevens privé en beveiligd blijven, tenzij de klant expliciet anders toestemt.
+
+## 6. Availability
+
+Tijdens piekuren moet de applicatie even vlot blijven werken als tijdens rustige momenten. De prestaties en gebruikerservaring mogen niet verminderen bij hoge belasting.
+
+## 7. Fault Tolerance
+
+Wanneer er iets fout gaat, moet het systeem blijven functioneren door automatisch over te schakelen naar een alternatief. Als bijvoorbeeld Uber Eats niet beschikbaar is, moet het systeem automatisch een andere bezorgdienst kunnen gebruiken.
