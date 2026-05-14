@@ -1,3 +1,2 @@
-"# ICTArchitectureProject" 
+# ICTArchitectureProject
 
-Initial commit
