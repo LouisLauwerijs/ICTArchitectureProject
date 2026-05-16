@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+
+  integration-deliveroo:
+    image: poc-adapter:latest
+    ports:
+      - "3001:3000"
+    environment:
+      - DELIVERY_PROVIDER=deliveroo
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+  integration-stuart:
+    image: poc-adapter:latest
+    ports:
+      - "3002:3000"
+    environment:
+      - DELIVERY_PROVIDER=stuart
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
