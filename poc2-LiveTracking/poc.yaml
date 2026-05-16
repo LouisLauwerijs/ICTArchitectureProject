@@ -1,0 +1,59 @@
+version: "3.8"
+services:
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly no --save ""
+    networks:
+      - tracking-net
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  ws-server:
+    image: 127.0.0.1:5000/poc-tracking-ws-server:latest
+    environment:
+      REDIS_URL: redis://redis:6379
+      REDIS_CHANNEL: tracking
+      PORT: "8765"
+    ports:
+      - "8765:8765"
+    networks:
+      - tracking-net
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+  tracker-sim:
+    image: 127.0.0.1:5000/poc-tracking-sim:latest
+    environment:
+      REDIS_URL: redis://redis:6379
+      REDIS_CHANNEL: tracking
+      INTERVAL_SECONDS: "1"
+    networks:
+      - tracking-net
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+  client:
+    image: 127.0.0.1:5000/poc-tracking-client:latest
+    environment:
+      WS_URL: ws://ws-server:8765
+    networks:
+      - tracking-net
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+networks:
+  tracking-net:
+    driver: overlay
+    attachable: true
