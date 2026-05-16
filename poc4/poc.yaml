@@ -1,0 +1,56 @@
+version: "3.8"
+
+services:
+  order-db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: orders
+    volumes:
+      - order-db-data:/var/lib/mysql
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.db == order
+
+  order-service:
+    image: poc4-order-service
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: order-db
+      DB_USER: root
+      DB_PASS: secret
+      DB_NAME: orders
+    deploy:
+      replicas: 2
+
+  reporting-db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: reporting
+    volumes:
+      - reporting-db-data:/var/lib/mysql
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.db == reporting
+
+  reporting-service:
+    image: poc4-reporting-service
+    ports:
+      - "3001:3001"
+    environment:
+      ORDER_DB_HOST: order-db
+      REPORT_DB_HOST: reporting-db
+      DB_USER: root
+      DB_PASS: secret
+    deploy:
+      replicas: 2
+
+volumes:
+  order-db-data:
+  reporting-db-data:
