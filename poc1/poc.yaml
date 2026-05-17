@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+
+  order-service:
+    image: localhost:5000/poc1-order-service
+    environment:
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+    deploy:
+      replicas: 1
+
+  payment-service:
+    image: localhost:5000/poc1-payment-service
+    environment:
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+    deploy:
+      replicas: 2
