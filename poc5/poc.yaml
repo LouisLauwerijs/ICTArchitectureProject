@@ -1,0 +1,235 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - target: 5672
+        published: 5672
+        protocol: tcp
+        mode: ingress
+      - target: 15672
+        published: 15672
+        protocol: tcp
+        mode: ingress
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+      update_config:
+        parallelism: 1
+        order: start-first
+    networks:
+      - cqrs-network
+
+  orderdb:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: orderdb
+      POSTGRES_USER: orderuser
+      POSTGRES_PASSWORD: orderpass
+    ports:
+      - target: 5432
+        published: 5433
+        protocol: tcp
+        mode: ingress
+    volumes:
+      - orderdb_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U orderuser -d orderdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+    networks:
+      - cqrs-network
+
+  orderdb-init:
+    image: postgres:15
+    environment:
+      PGPASSWORD: orderpass
+    command:
+      - sh
+      - -c
+      - |
+        until pg_isready -h orderdb -U orderuser -d orderdb; do
+          echo "Waiting for OrderDB..."
+          sleep 2
+        done
+        psql -h orderdb -U orderuser -d orderdb -f /schema/order-schema.sql
+        echo "OrderDB schema ensured"
+    configs:
+      - source: order_schema
+        target: /schema/order-schema.sql
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: none
+    networks:
+      - cqrs-network
+
+  reportingdb:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: reportingdb
+      POSTGRES_USER: reportinguser
+      POSTGRES_PASSWORD: reportingpass
+    ports:
+      - target: 5432
+        published: 5434
+        protocol: tcp
+        mode: ingress
+    volumes:
+      - reportingdb_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U reportinguser -d reportingdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+    networks:
+      - cqrs-network
+
+  reportingdb-init:
+    image: postgres:15
+    environment:
+      PGPASSWORD: reportingpass
+    command:
+      - sh
+      - -c
+      - |
+        until pg_isready -h reportingdb -U reportinguser -d reportingdb; do
+          echo "Waiting for ReportingDB..."
+          sleep 2
+        done
+        psql -h reportingdb -U reportinguser -d reportingdb -f /schema/reporting-schema.sql
+        echo "ReportingDB schema ensured"
+    configs:
+      - source: reporting_schema
+        target: /schema/reporting-schema.sql
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: none
+    networks:
+      - cqrs-network
+
+  order-service:
+    image: cqrs-order-service:latest
+    environment:
+      ORDERDB_HOST: orderdb
+      ORDERDB_NAME: orderdb
+      ORDERDB_USER: orderuser
+      ORDERDB_PASSWORD: orderpass
+      ORDERDB_PORT: 5432
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASSWORD: guest
+      EVENT_EXCHANGE: events
+      ORDER_ROUTING_KEY: order.placed
+      REPORTING_QUEUE: reporting-events
+      REPORTING_BINDING_KEY: order.*
+      FLASK_ENV: production
+    ports:
+      - target: 5001
+        published: 5001
+        protocol: tcp
+        mode: ingress
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:5001/health').read()",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+      update_config:
+        parallelism: 1
+        order: start-first
+    networks:
+      - cqrs-network
+
+  reporting-service:
+    image: cqrs-reporting-service:latest
+    environment:
+      REPORTINGDB_HOST: reportingdb
+      REPORTINGDB_NAME: reportingdb
+      REPORTINGDB_USER: reportinguser
+      REPORTINGDB_PASSWORD: reportingpass
+      REPORTINGDB_PORT: 5432
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASSWORD: guest
+      EVENT_EXCHANGE: events
+      REPORTING_QUEUE: reporting-events
+      REPORTING_BINDING_KEY: order.*
+      FLASK_ENV: production
+    ports:
+      - target: 5002
+        published: 5002
+        protocol: tcp
+        mode: ingress
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import json, urllib.request; data=json.load(urllib.request.urlopen('http://localhost:5002/health')); assert data['status']=='healthy' and data['event_consumer_running'] is True",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+      update_config:
+        parallelism: 1
+        order: start-first
+    networks:
+      - cqrs-network
+
+networks:
+  cqrs-network:
+    driver: overlay
+    attachable: true
+
+volumes:
+  rabbitmq_data:
+  orderdb_data:
+  reportingdb_data:
+
+configs:
+  order_schema:
+    file: ./order-service/schema.sql
+  reporting_schema:
+    file: ./reporting-service/schema.sql
