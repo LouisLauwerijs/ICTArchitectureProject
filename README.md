@@ -221,6 +221,7 @@ Indien de operationele complexiteit van EDA + microservices het team te zwaar be
 | ---------- | -------- |
 | **Status** | Accepted |
 | **Datum**  | 2026-05  |
+| **Beslissers** | Volledige projectgroep |
 
 #### Context
 
@@ -254,6 +255,7 @@ We kiezen voor **RabbitMQ**. Het volume van een MVP-bezorgplatform rechtvaardigt
 | ---------- | -------- |
 | **Status** | Accepted |
 | **Datum**  | 2026-05  |
+| **Beslissers** | Volledige projectgroep |
 
 #### Context
 
@@ -287,6 +289,7 @@ We kiezen voor **WebSockets** via een dedicated Tracking-service. Hoewel SSE een
 | ---------- | -------- |
 | **Status** | Accepted |
 | **Datum**  | 2026-05  |
+| **Beslissers** | Volledige projectgroep |
 
 #### Context
 
@@ -332,6 +335,7 @@ Technologiekeuzes per service:
 | ---------- | -------- |
 | **Status** | Accepted |
 | **Datum**  | 2026-05  |
+| **Beslissers** | Volledige projectgroep |
 
 #### Context
 
@@ -365,6 +369,7 @@ We kiezen voor het **Adapter-patroon** binnen een dedicated External Delivery In
 | ---------- | -------- |
 | **Status** | Accepted |
 | **Datum**  | 2026-05  |
+| **Beslissers** | Volledige projectgroep |
 
 #### Context
 
