@@ -107,7 +107,7 @@ Aggregeert data over bestellingen, inkomsten, bezorgtijden en gebruikersgedrag. 
 | Veld         | Waarde              |
 | ------------ | ------------------- |
 | **Status**   | Accepted            |
-| **Datum**    | 2025-05             |
+| **Datum**    | 2026-05             |
 | **Beslissers** | Volledige projectgroep |
 
 #### Context
@@ -220,7 +220,7 @@ Indien de operationele complexiteit van EDA + microservices het team te zwaar be
 | Veld       | Waarde   |
 | ---------- | -------- |
 | **Status** | Accepted |
-| **Datum**  | 2025-05  |
+| **Datum**  | 2026-05  |
 
 #### Context
 
@@ -253,7 +253,7 @@ We kiezen voor **RabbitMQ**. Het volume van een MVP-bezorgplatform rechtvaardigt
 | Veld       | Waarde   |
 | ---------- | -------- |
 | **Status** | Accepted |
-| **Datum**  | 2025-05  |
+| **Datum**  | 2026-05  |
 
 #### Context
 
@@ -286,7 +286,7 @@ We kiezen voor **WebSockets** via een dedicated Tracking-service. Hoewel SSE een
 | Veld       | Waarde   |
 | ---------- | -------- |
 | **Status** | Accepted |
-| **Datum**  | 2025-05  |
+| **Datum**  | 2026-05  |
 
 #### Context
 
@@ -331,7 +331,7 @@ Technologiekeuzes per service:
 | Veld       | Waarde   |
 | ---------- | -------- |
 | **Status** | Accepted |
-| **Datum**  | 2025-05  |
+| **Datum**  | 2026-05  |
 
 #### Context
 
@@ -364,7 +364,7 @@ We kiezen voor het **Adapter-patroon** binnen een dedicated External Delivery In
 | Veld       | Waarde   |
 | ---------- | -------- |
 | **Status** | Accepted |
-| **Datum**  | 2025-05  |
+| **Datum**  | 2026-05  |
 
 #### Context
 
